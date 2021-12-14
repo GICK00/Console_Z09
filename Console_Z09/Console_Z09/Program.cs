@@ -21,28 +21,39 @@ namespace Console_Z09
 
                     Console.WriteLine("| Введите число от которого будет отсчет.");
                     Console.Write("| M : ");
-                    int m = Convert.ToInt32(Console.ReadLine());
+                    double m = Convert.ToDouble(Console.ReadLine());
                     if (m >= n)
                         throw new Exception("Число M должно быть меньше N!");
 
-                    FileStream file = new("Number.bin", FileMode.Create, FileAccess.Write);
+                    FileStream file = new("Number.bat", FileMode.Create, FileAccess.Write);
                     BinaryWriter fileOut = new(file);
+                    double j = 0;
                     for (int i = 0; i < n; i++)
                     {
-                        fileOut.Write(i + 1);
+                        fileOut.Write(Convert.ToDouble(j += 0.1));
                     }
                     fileOut.Close();
 
-                    file = new FileStream("Number.bin", FileMode.Open, FileAccess.Read);
+                    Console.WriteLine("| Записанно.");
+                    file = new FileStream("Number.bat", FileMode.Open, FileAccess.Read);
                     BinaryReader fileIn = new(file);
                     long l = file.Length;
                     Console.Write("| ");
                     for (long i = 0; i < l; i += 8)
                     {
-                        if (fileIn.ReadInt32() > m / 2)
+                        file.Seek(i, SeekOrigin.Begin);
+                        Console.Write("{0} ", Math.Round(fileIn.ReadDouble(), 3));
+                    }
+
+                    Console.WriteLine("\r\n| Выведенно.");
+                    Console.Write("| ");
+                    for (long i = 0; i < l; i += 16)
+                    {
+                        file.Seek(i, SeekOrigin.Begin);
+                        double number = Math.Round(fileIn.ReadDouble(), 3);
+                        if (number > m)
                         {
-                            file.Seek(i, SeekOrigin.Begin);
-                            Console.Write("{0} ", fileIn.ReadInt32());
+                            Console.Write("{0} ", number);
                         }
                     }
                     Console.WriteLine();
